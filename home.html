@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Digital Project Monitoring System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #007BFF;
+            --white: #FFFFFF;
+            --silver-gray: #F5F7FA;
+            --dark-gray: #333333;
+            --light-gray: #E0E0E0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        body {
+            background-color: var(--silver-gray);
+            color: var(--dark-gray);
+            overflow-x: hidden;
+        }
+        
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .slides-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .slide.active {
+            opacity: 1;
+            z-index: 10;
+        }
+        
+        .slide-content {
+            max-width: 900px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .slide-title {
+            color: var(--primary-blue);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .slide-subtitle {
+            color: var(--dark-gray);
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .slide-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .presentation-controls {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 40px;
+            background-color: var(--white);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background-color: #0069d9;
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background-color: var(--light-gray);
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .slide-counter {
+            font-weight: 600;
+            color: var(--dark-gray);
+            display: flex;
+            align-items: center;
+        }
+        
+        .features-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .features-table th {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .features-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .features-table tr:nth-child(even) {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        
+        .icon {
+            color: var(--primary-blue);
+            margin-right: 10px;
+        }
+        
+        .flowchart {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+        }
+        
+        .flowchart-step {
+            flex: 1;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .flowchart-step:not(:last-child)::after {
+            content: "→";
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: var(--primary-blue);
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-blue);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            margin: 0 auto 15px;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-blue);
+        }
+        
+        .outcomes-list {
+            list-style-type: none;
+            margin: 20px 0;
+        }
+        
+        .outcomes-list li {
+            padding: 10px 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .next-steps-list {
+            list-style-type: none;
+            margin: 20px 0;
+        }
+        
+        .next-steps-list li {
+            padding: 15px 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .next-steps-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .contact-info {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .contact-info a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+        
+        .logo {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            font-weight: 600;
+        }
+        
+        .slide-1 .slide-content {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .slide-1 .slide-title {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .slide-1 .slide-subtitle {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+        }
+        
+        .presentation-info {
+            text-align: center;
+            margin-top: 40px;
+            font-weight: 600;
+        }
+        
+        .visual-placeholder {
+            height: 200px;
+            background-color: var(--light-gray);
+            border-radius: 8px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #888;
+            font-style: italic;
+        }
+        
+        .image-container {
+            height: 200px;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--light-gray);
+        }
+        
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        @media (max-width: 768px) {
+            .slide-content {
+                padding: 20px;
+            }
+            
+            .slide-title {
+                font-size: 2rem;
+            }
+            
+            .flowchart {
+                flex-direction: column;
+            }
+            
+            .flowchart-step:not(:last-child)::after {
+                content: "↓";
+                right: 50%;
+                top: auto;
+                bottom: -15px;
+                transform: translateX(50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slides-container">
+            <!-- Slide 1: Title Slide -->
+            <div class="slide slide-1 active" style="background-image: linear-gradient(rgba(0, 123, 255, 0.7), rgba(0, 123, 255, 0.5)), url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+                <div class="slide-content">
+                    <h1 class="slide-title">Automated Digital Project Monitoring System</h1>
+                    <p class="slide-subtitle">Automating Monitoring for Transparency and Efficiency</p>
+                    <div class="presentation-info">
+                        <p>Presented to: Gombe State Government</p>
+                        <p>Date: 22-10-25</p>
+                    </div>
+                    <div class="logo">VS45 TECHNOLOGIES LTD</div>
+                </div>
+            </div>
+            
+            <!-- Slide 2: The Challenge -->
+            <div class="slide slide-2" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1586075010923-2dd4570fb338?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80');">
+                <div class="slide-content">
+                    <h2 class="slide-title">The Challenge – Lack of Visibility in Project Execution</h2>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1911&q=80" alt="Complex project flowchart">
+                    </div>
+                    <ul class="outcomes-list">
+                        <li><i class="fas fa-times-circle icon"></i> Manual processes relying on paper and site visits</li>
+                        <li><i class="fas fa-times-circle icon"></i> Data silos and inconsistent records</li>
+                        <li><i class="fas fa-times-circle icon"></i> Delayed reporting leading to slow decisions</li>
+                        <li><i class="fas fa-times-circle icon"></i> Difficult progress verification</li>
+                        <li><i class="fas fa-times-circle icon"></i> Payment delays</li>
+                    </ul>
+                    <p class="slide-text"><strong>Bottom Line:</strong> Inefficiency, lack of transparency, and potential cost overruns.</p>
+                    <div class="logo">VS45 TECHNOLOGIES LTD</div>
+                </div>
+            </div>
+            
+            <!-- Slide 3: Our Solution -->
+            <div class="slide slide-3" style="background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+                <div class="slide-content">
+                    <h2 class="slide-title">Our Solution – The AlphaTrack Platform</h2>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Tablet displaying a sleek data dashboard">
+                    </div>
+                    <p class="slide-subtitle">A Unified Digital Ecosystem for Project Management</p>
+                    <ul class="outcomes-list">
+                        <li><i class="fas fa-check-circle icon"></i> Centralized contractor onboarding</li>
+                        <li><i class="fas fa-check-circle icon"></i> Real-time dashboards</li>
+                        <li><i class="fas fa-check-circle icon"></i> Automated monitoring & verification</li>
+                        <li><i class="fas fa-check-circle icon"></i> A single source of truth</li>
+                    </ul>
+                    <div class="logo">VS45 TECHNOLOGIES LTD</div>
+                </div>
+            </div>
+            
+            <!-- Slide 4: Contractor Workflow -->
+            <div class="slide slide-4" style="background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+                <div class="slide-content">
+                    <h2 class="slide-title">How It Works – Contractor Workflow</h2>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Construction site blended with digital UI">
+                    </div>
+                    <div class="flowchart">
+                        <div class="flowchart-step">
+                            <div class="step-number">1</div>
+                            <div class="step-title">Register & Plan</div>
+                            <p>Project stages defined digitally</p>
+                        </div>
+                        <div class="flowchart-step">
+                            <div class="step-number">2</div>
+                            <div class="step-title">Execute & Update</div>
+                            <p>Progress updates with photos/videos</p>
+                        </div>
+                        <div class="flowchart-step">
+                            <div class="step-number">3</div>
+                            <div class="step-title">Submit for Verification</div>
+                            <p>Notifies government monitor automatically</p>
+                        </div>
+                    </div>
+                    <div class="logo">VS45 TECHNOLOGIES LTD</div>
+                </div>
+            </div>
+            
+            <!-- Slide 5: Government Oversight Workflow -->
+            <div class="slide slide-5" style="background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+                <div class="slide-content">
+                    <h2 class="slide-title">How It Works – Government Oversight Workflow</h2>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Official reviewing a dashboard or using a tablet">
+                    </div>
+                    <div class="flowchart">
+                        <div class="flowchart-step">
+                            <div class="step-number">1</div>
+                            <div class="step-title">Get Notified</div>
+                            <p>Automatic alerts for pending verifications</p>
+                        </div>
+                        <div class="flowchart-step">
+                            <div class="step-number">2</div>
+                            <div class="step-title">Verify & Validate</div>
+                            <p>Review progress updates and documentation</p>
+                        </div>
+                        <div class="flowchart-step">
+                            <div class="step-number">3</div>
+                            <div class="step-title">Approve & Recommend Payment</div>
+                            <p>Streamlined approval process</p>
+                        </div>
+                    </div>
+                    <div class="logo">VS45 TECHNOLOGIES LTD</div>
+                </div>
+            </div>
+            
+            <!-- Slide 6: Key Features & Benefits -->
+            <div class="slide slide-6" style="background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+                <div class="slide-content">
+                    <h2 class="slide-title">Key Features & Benefits</h2>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Data visualization or abstract circuit design">
+                    </div>
+                    <table class="features-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Benefit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><i class="fas fa-check icon"></i> Unified Project Categorization</td>
+                                <td>Clear oversight by sponsor type</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-check icon"></i> Dynamic Status Tracking</td>
+                                <td>Real-time visibility</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-check icon"></i> Automated Payment Recommendations</td>
+                                <td>Faster contractor payments</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-check icon"></i> Centralized Document Repository</td>
+                                <td>Secure, paperless records</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-check icon"></i> Real-Time Executive Dashboard</td>
+                                <td>Data-driven leadership</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="logo">VS45 TECHNOLOGIES LTD</div>
+                </div>
+            </div>
+            
+            <!-- Slide 7: Tangible Outcomes -->
+            <div class="slide slide-7" style="background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+                <div class="slide-content">
+                    <h2 class="slide-title">Tangible Outcomes</h2>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Upward graph or progress indicators">
+                    </div>
+                    <ul class="outcomes-list">
+                        <li><i class="fas fa-chart-line icon"></i> Transparency & accountability</li>
+                        <li><i class="fas fa-database icon"></i> Data-driven decisions</li>
+                        <li><i class="fas fa-clock icon"></i> On-time delivery</li>
+                        <li><i class="fas fa-handshake icon"></i> Strengthened public trust</li>
+                    </ul>
+                    <div class="logo">VS45 TECHNOLOGIES LTD</div>
+                </div>
+            </div>
+            
+            <!-- Slide 8: Next Steps -->
+            <div class="slide slide-8" style="background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+                <div class="slide-content">
+                    <h2 class="slide-title">Next Steps</h2>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Forward-looking concept (arrow, sunrise, or progress path)">
+                    </div>
+                    <ol class="next-steps-list">
+                        <li><span style="font-weight: 700; margin-right: 10px;">1.</span> Pilot Program – 3-month trial</li>
+                        <li><span style="font-weight: 700; margin-right: 10px;">2.</span> Stakeholder Training</li>
+                        <li><span style="font-weight: 700; margin-right: 10px;">3.</span> Review & Refine</li>
+                        <li><span style="font-weight: 700; margin-right: 10px;">4.</span> State-wide Rollout</li>
+                    </ol>
+                    <div class="logo">VS45 TECHNOLOGIES LTD</div>
+                </div>
+            </div>
+            
+            <!-- Slide 9: Thank You -->
+            <div class="slide slide-9" style="background-image: linear-gradient(rgba(0, 123, 255, 0.7), rgba(0, 123, 255, 0.5)), url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+                <div class="slide-content">
+                    <h2 class="slide-title">Thank You</h2>
+                    <p class="slide-subtitle">Questions & Discussion</p>
+                    <div class="contact-info">
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:info@vs45tech.com">info@vs45tech.com</a></p>
+                        <p><i class="fas fa-globe"></i> <a href="https://vs45tech.com" target="_blank">vs45tech.com</a></p>
+                    </div>
+                    <div class="logo">VS45 TECHNOLOGIES LTD</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="presentation-controls">
+            <button class="btn" id="prev-btn" disabled>
+                <i class="fas fa-arrow-left"></i> Previous
+            </button>
+            <div class="slide-counter">
+                Slide <span id="current-slide">1</span> of <span id="total-slides">9</span>
+            </div>
+            <button class="btn" id="next-btn">
+                Next <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const currentSlideEl = document.getElementById('current-slide');
+            const totalSlidesEl = document.getElementById('total-slides');
+            
+            let currentSlide = 0;
+            const totalSlides = slides.length;
+            
+            totalSlidesEl.textContent = totalSlides;
+            
+            function updateSlide() {
+                slides.forEach((slide, index) => {
+                    if (index === currentSlide) {
+                        slide.classList.add('active');
+                    } else {
+                        slide.classList.remove('active');
+                    }
+                });
+                
+                currentSlideEl.textContent = currentSlide + 1;
+                
+                prevBtn.disabled = currentSlide === 0;
+                nextBtn.disabled = currentSlide === totalSlides - 1;
+            }
+            
+            prevBtn.addEventListener('click', function() {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    updateSlide();
+                }
+            });
+            
+            nextBtn.addEventListener('click', function() {
+                if (currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                    updateSlide();
+                }
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft' && currentSlide > 0) {
+                    currentSlide--;
+                    updateSlide();
+                } else if (e.key === 'ArrowRight' && currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                    updateSlide();
+                }
+            });
+            
+            // Initialize
+            updateSlide();
+        });
+    </script>
+</body>
+</html>
